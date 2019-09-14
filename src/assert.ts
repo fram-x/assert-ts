@@ -8,11 +8,13 @@ type Formatter = (
   message?: string,
   props?: object,
 ) => string;
+
 type ErrorCreator = (
   failureType: AssertFailed,
   message?: string,
   props?: object,
 ) => Error;
+
 type ErrorReporter = (
   failureType: AssertFailed,
   error: Error,
@@ -32,7 +34,7 @@ type RequiredConfiguration = {
   errorReporter?: ErrorReporter;
 };
 
-const messageFormatter: Formatter = (
+const errorMessageFormatter: Formatter = (
   failureType: AssertFailed,
   message?: string,
   props?: object,
@@ -53,8 +55,8 @@ const errorCreatorFactory = (formatter: Formatter): ErrorCreator => {
 };
 
 const defaultConfiguration: RequiredConfiguration = {
-  formatter: messageFormatter,
-  errorCreator: errorCreatorFactory(messageFormatter),
+  formatter: errorMessageFormatter,
+  errorCreator: errorCreatorFactory(errorMessageFormatter),
 };
 
 let configuration = defaultConfiguration;
@@ -73,6 +75,13 @@ export function configureAssert(custom: AssertConfiguration) {
     custom.errorCreator || errorCreatorFactory(newConfig.formatter);
 
   configuration = newConfig;
+}
+
+/**
+ * For test purpose
+ */
+export function testResetConfiguration() {
+  configuration = defaultConfiguration;
 }
 
 /**
