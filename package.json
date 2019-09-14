@@ -1,6 +1,6 @@
 {
   "name": "assert-ts",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Invariant and non-null/undefined assertion check with typescript type guards",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
