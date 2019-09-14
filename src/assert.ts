@@ -1,22 +1,22 @@
-enum AssertFailed {
+enum FailureType {
   Condition = 'Condition',
   NoValue = 'NoValue',
 }
 
 type Formatter = (
-  failureType: AssertFailed,
+  failureType: FailureType,
   message?: string,
   props?: object,
 ) => string;
 
 type ErrorCreator = (
-  failureType: AssertFailed,
+  failureType: FailureType,
   message?: string,
   props?: object,
 ) => Error;
 
 type ErrorReporter = (
-  failureType: AssertFailed,
+  failureType: FailureType,
   error: Error,
   message?: string,
   props?: object,
@@ -35,12 +35,12 @@ type RequiredConfiguration = {
 };
 
 const errorMessageFormatter: Formatter = (
-  failureType: AssertFailed,
+  failureType: FailureType,
   message?: string,
   props?: object,
 ): string => {
   const msg =
-    (failureType === AssertFailed.Condition
+    (failureType === FailureType.Condition
       ? 'Assert condition failed'
       : 'Assert value not undefined/null failed') +
     (message ? `: ${message}` : '') +
@@ -50,7 +50,7 @@ const errorMessageFormatter: Formatter = (
 };
 
 const errorCreatorFactory = (formatter: Formatter): ErrorCreator => {
-  return (failureType: AssertFailed, message?: string, props?: object) =>
+  return (failureType: FailureType, message?: string, props?: object) =>
     new Error(formatter(failureType, message, props));
 };
 
@@ -119,14 +119,14 @@ export function assert<T>(
     if (!conditionOrValue) {
       const properties = typeof props === 'function' ? props() : props;
       const error = configuration.errorCreator(
-        AssertFailed.Condition,
+        FailureType.Condition,
         message,
         properties,
       );
 
       if (configuration.errorReporter) {
         configuration.errorReporter(
-          AssertFailed.Condition,
+          FailureType.Condition,
           error,
           message,
           properties,
@@ -141,14 +141,14 @@ export function assert<T>(
   if (typeof conditionOrValue === 'undefined' || conditionOrValue === null) {
     const properties = typeof props === 'function' ? props() : props;
     const error = configuration.errorCreator(
-      AssertFailed.NoValue,
+      FailureType.NoValue,
       message,
       properties,
     );
 
     if (configuration.errorReporter) {
       configuration.errorReporter(
-        AssertFailed.NoValue,
+        FailureType.NoValue,
         error,
         message,
         properties,
