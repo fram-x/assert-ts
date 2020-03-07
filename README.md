@@ -64,7 +64,7 @@ function transfer(fromnId: string, toId: string, amount: number) {
   // Throws error if findAccount returns undefined
   const fromAccount = assert(findAccount(fromId), "From account does not exist", { fromId});
 
-  // Typescript type guards: when a non-null/undefined assertion succeeds,
+  // Type restriction: when a non-null/undefined assertion succeeds,
   // type is restricted, e.g. to Account. Hence, no need for further testing of undefined/null
   fromAccount.amount -= amount;
 
@@ -81,7 +81,6 @@ function transfer(fromnId: string, toId: string, amount: number) {
 
 Checks that a condition is true. If not, an error is thrown. By default, any message or properties provided will be formatted as part of the error's message. See below for custom configuration.
 
-
 ```javascript
 function assert(
   condition: boolean,
@@ -89,6 +88,7 @@ function assert(
   props?: object | (() => object),
 ): void;
 ```
+
 ### Assert non-null/undefined
 
 Checks that a value is not null or undefined. If null or undefined, an error is thrown. When successful, the returned value's type is restricted to the expected type.
@@ -100,21 +100,23 @@ function assert<T>(
   props?: object | (() => object),
 ): T;
 ```
+
 ### Configuration
 
 The default configuration throws an Error with a message saying whether it was a condition or null/undefined check that failed and any custom message or properties formatted as part of the message.
 
 Use `configureAssert` to customize this, providing an `AssertConfiguration` object with any of the following properties:
 
-| Property | Description |
-|----------|-------------|
-| formatter| To do custom formatting of error message  ```(failureType: FailureType, message?: string,  props?: object) => string``` |
-| errorCreator| To create custom error objects ```(failureType: FailureType, message?: string, props?: object) => Error``` |
-| errorReporter| To do custom reporting of assertion failures, e.g. report to backend ```(failureType: FailureType, error: Error, message?: string, props?: object) => void``` |
-
+| Property      | Description                                                                                                                                               |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| formatter     | To do custom formatting of error message `(failureType: FailureType, message?: string, props?: object) => string`                                         |
+| errorCreator  | To create custom error objects `(failureType: FailureType, message?: string, props?: object) => Error`                                                    |
+| errorReporter | To do custom reporting of assertion failures, e.g. report to backend `(failureType: FailureType, error: Error, message?: string, props?: object) => void` |
 
 ### Contributors
+
 Bjørn Egil Hansen (@bjornegil)
 
 ### Sponsors
-[Fram X](https://framx.no) - a cross platform app company from Norway. 
+
+[Fram X](https://framx.no) - a cross platform app company from Norway.
