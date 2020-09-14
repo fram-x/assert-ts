@@ -95,7 +95,7 @@ export function assert(
   condition: boolean,
   message?: string,
   props?: object | (() => object),
-): void;
+): asserts condition;
 
 /**
  * Verify that an optional value actually has a proper value in this context, i.e. not null or undefined.
