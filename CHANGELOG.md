@@ -1,4 +1,4 @@
-## v0.2.1
+## v0.2.2
 
 - Added `asserts condition` clause on `assert(condition, ...)` for improved support for TypeScript control flow based typing
 - Updated to TypeScript depndency for support of `asserts condition`
