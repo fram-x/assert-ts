@@ -5,7 +5,12 @@
 </a>
 <a href="https://opensource.org/licenses/ISC"><img src="https://img.shields.io/badge/License-ISC-blue.svg"></a>
 
-Invariant and non-null/undefined assertions.
+Invariant and non-null/undefined assertions, both
+
+- _strict_, i.e. logs error and throws exception, and
+- _soft_, i.e. just logs a warning.
+
+Both strict and soft will narrow type, i.e. eliminate `null` or `undefined`.
 
 ## Introduction
 
@@ -23,7 +28,7 @@ or
 
 ## Examples
 
-### Assert condition
+### Assert condition, strict
 
 ```javascript
 import assert from 'assert-ts';
@@ -32,6 +37,20 @@ function transfer(fromId: string, toId: string, amount: number) {
   // Throws error if not true
   assert(amount > 0);
   ...
+}
+
+```
+
+### Assert condition, soft
+
+```javascript
+import assert from 'assert-ts';
+
+function transfer(fromId: string, toId: string, amount: number) {
+  // Logs warning if false
+  if (assert.soft(amount > 0)) {
+    ...
+  }
 }
 
 ```
@@ -73,6 +92,23 @@ function transfer(fromnId: string, toId: string, amount: number) {
 
 ```
 
+### Assert non-null/undefined, soft
+
+```javascript
+import assert from 'assert-ts';
+
+
+function notify(person?: Person) {
+  ...
+  // Logs warning if person is undefined
+  if (assert.soft(person, 'Person should be provided')) {
+    // person narrowed to Person
+    sendSms(person.mobile);
+  }
+}
+
+```
+
 ## API
 
 `assert` has two signatures
@@ -86,7 +122,7 @@ function assert(
   condition: boolean,
   message?: string,
   props?: object | (() => object),
-): void;
+): asserts condition;
 ```
 
 ### Assert non-null/undefined
@@ -101,17 +137,44 @@ function assert<T>(
 ): T;
 ```
 
+`assert.soft` has two signatures
+
+### Check condition
+
+Checks that a condition is true. If not, logs a warning. By default, any message or properties provided will be formatted as part of the warning message. See below for custom configuration.
+
+```javascript
+function soft(
+  condition: boolean,
+  message?: string,
+  props?: object | (() => object),
+): condition is true;
+```
+
+### Check non-null/undefined
+
+Checks that a value is not null or undefined. If null or undefined, a warning is logged. When successful, the value's type is narrowed to the expected type.
+
+```javascript
+function soft<T>(
+  value: T | undefined | null,
+  message?: string,
+  props?: object | (() => object),
+): value is T;
+```
+
 ### Configuration
 
 The default configuration throws an Error with a message saying whether it was a condition or null/undefined check that failed and any custom message or properties formatted as part of the message.
 
 Use `configureAssert` to customize this, providing an `AssertConfiguration` object with any of the following properties:
 
-| Property      | Description                                                                                                                                               |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| formatter     | To do custom formatting of error message `(failureType: FailureType, message?: string, props?: object) => string`                                         |
-| errorCreator  | To create custom error objects `(failureType: FailureType, message?: string, props?: object) => Error`                                                    |
-| errorReporter | To do custom reporting of assertion failures, e.g. report to backend `(failureType: FailureType, error: Error, message?: string, props?: object) => void` |
+| Property        | Description                                                                                                                                               |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| formatter       | To do custom formatting of error message `(failureType: FailureType, message?: string, props?: object) => string`                                         |
+| errorCreator    | To create custom error objects `(failureType: FailureType, message?: string, props?: object) => Error`                                                    |
+| errorReporter   | To do custom reporting of assertion failures, e.g. report to backend `(failureType: FailureType, error: Error, message?: string, props?: object) => void` |
+| warningReporter | To do custom reporting of soft assertion failures, e.g. report to backend `(failureType: FailureType, message?: string, props?: object) => void`          |
 
 ### Contributors
 
