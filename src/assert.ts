@@ -3,17 +3,7 @@ enum FailureType {
   NoValue = 'NoValue',
 }
 
-enum Strictness {
-  Strict = 'Strict',
-  Soft = 'Soft',
-}
-
-type Formatter = (
-  /**
-   * Strict: assert(...) failed
-   * Soft: assert.soft(...) failed
-   */
-  strictness: Strictness,
+type ErrorFormatter = (
   failureType: FailureType,
   message?: string,
   props?: object,
@@ -39,47 +29,40 @@ type WarningReporter = (
 ) => void;
 
 export type AssertConfiguration = {
-  formatter?: Formatter;
+  formatter?: ErrorFormatter;
   errorCreator?: ErrorCreator;
   errorReporter?: ErrorReporter;
   warningReporter?: WarningReporter;
 };
 
 type RequiredConfiguration = {
-  formatter: Formatter;
+  formatter: ErrorFormatter;
   errorCreator: ErrorCreator;
   errorReporter?: ErrorReporter;
   warningReporter?: WarningReporter;
 };
 
-const messageFormatter: Formatter = (
-  strictness: Strictness,
+const messageFormatter: ErrorFormatter = (
   failureType: FailureType,
   message?: string,
   props?: object,
 ): string => {
   const typeMap = {
-    [Strictness.Strict]: {
-      [FailureType.Condition]: 'Assert condition failed',
-      [FailureType.NoValue]: 'Assert value not undefined/null failed',
-    },
-    [Strictness.Soft]: {
-      [FailureType.Condition]: 'Check condition failed',
-      [FailureType.NoValue]: 'Check value not undefined/null failed',
-    },
+    [FailureType.Condition]: 'Assert condition failed',
+    [FailureType.NoValue]: 'Assert value not undefined/null failed',
   };
 
   const msg =
-    typeMap[strictness][failureType] +
+    typeMap[failureType] +
     (message ? `: ${message}` : '') +
     (props ? `: ${JSON.stringify(props)}` : '');
 
   return msg;
 };
 
-const errorCreatorFactory = (formatter: Formatter): ErrorCreator => {
+const errorCreatorFactory = (formatter: ErrorFormatter): ErrorCreator => {
   return (failureType: FailureType, message?: string, props?: object) =>
-    new Error(formatter(Strictness.Strict, failureType, message, props));
+    new Error(formatter(failureType, message, props));
 };
 
 const defaultConfiguration: RequiredConfiguration = {
@@ -229,25 +212,15 @@ const softAssert: SoftAssert = <T>(
   message?: string,
   props?: object | (() => object),
 ): conditionOrValue is T | true => {
+  const warningReporter = assert(
+    configuration.warningReporter,
+    'assert.soft must have warningReporter configured, see https://www.npmjs.com/package/assert-ts#configuration',
+  );
+
   if (typeof conditionOrValue === 'boolean') {
     if (!conditionOrValue) {
       const properties = typeof props === 'function' ? props() : props;
-
-      if (configuration.warningReporter) {
-        configuration.warningReporter(
-          FailureType.Condition,
-          message,
-          properties,
-        );
-      } else {
-        const formattedMessage = configuration.formatter(
-          Strictness.Soft,
-          FailureType.Condition,
-          message,
-          properties,
-        );
-        console.warn(formattedMessage);
-      }
+      warningReporter(FailureType.Condition, message, properties);
     }
 
     return conditionOrValue;
@@ -255,18 +228,7 @@ const softAssert: SoftAssert = <T>(
 
   if (conditionOrValue === undefined || conditionOrValue === null) {
     const properties = typeof props === 'function' ? props() : props;
-
-    if (configuration.warningReporter) {
-      configuration.warningReporter(FailureType.NoValue, message, properties);
-    } else {
-      const formattedMessage = configuration.formatter(
-        Strictness.Soft,
-        FailureType.NoValue,
-        message,
-        properties,
-      );
-      console.warn(formattedMessage);
-    }
+    warningReporter(FailureType.NoValue, message, properties);
 
     return false;
   }
