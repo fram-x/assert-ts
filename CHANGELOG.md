@@ -1,3 +1,7 @@
+## v0.3.1
+
+- Automated pull request fixing a security vulnerability.
+
 ## v0.3.0
 
 - Added `assert.soft` variant to check a condition/value and just log warning when false/null/undefined.
