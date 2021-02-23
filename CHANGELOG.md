@@ -1,3 +1,7 @@
+## v0.3.2
+
+- Relaxed configuration requirements, i.e. by default uses console.warn when assert.soft check fails.
+
 ## v0.3.1
 
 - Automated pull request fixing a security vulnerability.
