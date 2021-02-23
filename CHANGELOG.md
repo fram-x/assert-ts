@@ -1,6 +1,6 @@
 ## v0.3.2
 
-- Relaxed configuration requirements, i.e. by default uses console.warn when assert.soft check fails.
+- Relaxed configuration requirements, i.e. will not require warningReporter before actual assert.soft check fails and needs reporting.
 
 ## v0.3.1
 
