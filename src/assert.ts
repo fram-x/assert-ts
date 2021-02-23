@@ -39,7 +39,7 @@ type RequiredConfiguration = {
   formatter: ErrorFormatter;
   errorCreator: ErrorCreator;
   errorReporter?: ErrorReporter;
-  warningReporter: WarningReporter;
+  warningReporter?: WarningReporter;
 };
 
 const messageFormatter: ErrorFormatter = (
@@ -60,15 +60,6 @@ const messageFormatter: ErrorFormatter = (
   return msg;
 };
 
-const defaultWarningReporter: WarningReporter = (
-  failureType: FailureType,
-  message?: string,
-  props?: object,
-) => {
-  const warnMsg = configuration.formatter(failureType, message, props);
-  console.warn(warnMsg);
-};
-
 const errorCreatorFactory = (formatter: ErrorFormatter): ErrorCreator => {
   return (failureType: FailureType, message?: string, props?: object) =>
     new Error(formatter(failureType, message, props));
@@ -77,7 +68,6 @@ const errorCreatorFactory = (formatter: ErrorFormatter): ErrorCreator => {
 const defaultConfiguration: RequiredConfiguration = {
   formatter: messageFormatter,
   errorCreator: errorCreatorFactory(messageFormatter),
-  warningReporter: defaultWarningReporter,
 };
 
 let configuration = defaultConfiguration;
