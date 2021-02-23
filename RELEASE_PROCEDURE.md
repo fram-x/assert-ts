@@ -4,7 +4,7 @@
 
 - Make neccessary changes, verify that tests run and not type issues
 - Update CHANGELOG.md with changes for the to-be version
-- Commit changes
+- Commit changes and merge branch to develop
 
 ### Bump version and publish
 

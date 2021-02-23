@@ -212,15 +212,15 @@ const softAssert: SoftAssert = <T>(
   message?: string,
   props?: object | (() => object),
 ): conditionOrValue is T | true => {
-  const warningReporter = assert(
-    configuration.warningReporter,
-    'assert.soft must have warningReporter configured, see https://www.npmjs.com/package/assert-ts#configuration',
-  );
+  const warningReporter = configuration.warningReporter;
 
   if (typeof conditionOrValue === 'boolean') {
     if (!conditionOrValue) {
       const properties = typeof props === 'function' ? props() : props;
-      warningReporter(FailureType.Condition, message, properties);
+      assert(
+        warningReporter,
+        'assert.soft must have warningReporter configured, see https://www.npmjs.com/package/assert-ts#configuration',
+      )(FailureType.Condition, message, properties);
     }
 
     return conditionOrValue;
@@ -228,7 +228,10 @@ const softAssert: SoftAssert = <T>(
 
   if (conditionOrValue === undefined || conditionOrValue === null) {
     const properties = typeof props === 'function' ? props() : props;
-    warningReporter(FailureType.NoValue, message, properties);
+    assert(
+      warningReporter,
+      'assert.soft must have warningReporter configured, see https://www.npmjs.com/package/assert-ts#configuration',
+    )(FailureType.NoValue, message, properties);
 
     return false;
   }
