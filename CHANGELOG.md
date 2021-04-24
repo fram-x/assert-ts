@@ -1,3 +1,7 @@
+## v0.3.3
+
+- Automated pull request fixing a security vulnerability.
+
 ## v0.3.2
 
 - Relaxed configuration requirements, i.e. will not require warningReporter before actual assert.soft check fails and needs reporting.
