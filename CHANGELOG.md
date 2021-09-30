@@ -1,3 +1,7 @@
+## v0.3.4
+
+- Automated pull requests fixing a security vulnerabilities.
+
 ## v0.3.3
 
 - Automated pull request fixing a security vulnerability.
